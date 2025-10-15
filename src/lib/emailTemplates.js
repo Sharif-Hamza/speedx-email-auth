@@ -3,10 +3,11 @@
  * @param {Object} options
  * @param {string} options.confirmUrl - Confirmation URL
  * @param {string} options.email - User's email
+ * @param {string} options.username - User's name/username
  * @param {string} options.expiresIn - Expiration time (e.g. "48 hours")
  * @returns {string} HTML email content
  */
-function getConfirmationEmailHTML({ confirmUrl, email, expiresIn = '48 hours' }) {
+function getConfirmationEmailHTML({ confirmUrl, email, username, expiresIn = '48 hours' }) {
   return `
 <!DOCTYPE html>
 <html lang="en">
@@ -108,7 +109,7 @@ function getConfirmationEmailHTML({ confirmUrl, email, expiresIn = '48 hours' })
     <div class="content">
       <h1>🏁 Welcome to SpeedX!</h1>
       
-      <p>Hi there,</p>
+      <p>Hi ${username || 'there'},</p>
       
       <p>Thank you for signing up for SpeedX. We're excited to have you join our community of speed enthusiasts!</p>
       
@@ -160,14 +161,15 @@ function getConfirmationEmailHTML({ confirmUrl, email, expiresIn = '48 hours' })
  * @param {Object} options
  * @param {string} options.confirmUrl - Confirmation URL
  * @param {string} options.email - User's email
+ * @param {string} options.username - User's name/username
  * @param {string} options.expiresIn - Expiration time
  * @returns {string} Plain text email content
  */
-function getConfirmationEmailText({ confirmUrl, email, expiresIn = '48 hours' }) {
+function getConfirmationEmailText({ confirmUrl, email, username, expiresIn = '48 hours' }) {
   return `
 SPEEDX - Confirm Your Email
 
-Hi there,
+Hi ${username || 'there'},
 
 Thank you for signing up for SpeedX. We're excited to have you join our community of speed enthusiasts!
 
@@ -198,8 +200,8 @@ Support: https://speed-x.us/support
 /**
  * Generate resend confirmation email HTML
  */
-function getResendConfirmationEmailHTML({ confirmUrl, email, expiresIn = '48 hours' }) {
-  return getConfirmationEmailHTML({ confirmUrl, email, expiresIn })
+function getResendConfirmationEmailHTML({ confirmUrl, email, username, expiresIn = '48 hours' }) {
+  return getConfirmationEmailHTML({ confirmUrl, email, username, expiresIn })
     .replace('Welcome to SpeedX!', 'Resend: Confirm Your Email')
     .replace('Thank you for signing up for SpeedX.', 'You requested a new confirmation email.');
 }
@@ -207,8 +209,8 @@ function getResendConfirmationEmailHTML({ confirmUrl, email, expiresIn = '48 hou
 /**
  * Generate resend confirmation email text
  */
-function getResendConfirmationEmailText({ confirmUrl, email, expiresIn = '48 hours' }) {
-  return getConfirmationEmailText({ confirmUrl, email, expiresIn })
+function getResendConfirmationEmailText({ confirmUrl, email, username, expiresIn = '48 hours' }) {
+  return getConfirmationEmailText({ confirmUrl, email, username, expiresIn })
     .replace('Thank you for signing up for SpeedX.', 'You requested a new confirmation email.');
 }
 

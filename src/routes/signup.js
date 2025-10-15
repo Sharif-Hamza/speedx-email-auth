@@ -102,13 +102,14 @@ router.post('/', async (req, res) => {
 
     // Send confirmation email
     const expiresIn = `${process.env.TOKEN_EXPIRATION_HOURS || 48} hours`;
+    const username = metadata.full_name || metadata.username || email.split('@')[0];
     
     try {
       await sendEmail({
         to: email,
         subject: 'Confirm your SpeedX account',
-        htmlBody: getConfirmationEmailHTML({ confirmUrl, email, expiresIn }),
-        textBody: getConfirmationEmailText({ confirmUrl, email, expiresIn })
+        htmlBody: getConfirmationEmailHTML({ confirmUrl, email, username, expiresIn }),
+        textBody: getConfirmationEmailText({ confirmUrl, email, username, expiresIn })
       });
 
       console.log(`✅ Confirmation email sent to ${email}`);
