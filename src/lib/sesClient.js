@@ -1,75 +1,37 @@
-const AWS = require('aws-sdk');
+const { Resend } = require('resend');
 
 // Validate environment variables
-if (!process.env.AWS_REGION) {
-  throw new Error('AWS_REGION is required');
+if (!process.env.RESEND_API_KEY) {
+  throw new Error('RESEND_API_KEY is required');
 }
 
-if (!process.env.AWS_ACCESS_KEY_ID) {
-  throw new Error('AWS_ACCESS_KEY_ID is required');
+if (!process.env.FROM_EMAIL) {
+  throw new Error('FROM_EMAIL is required (e.g., support@speed-x.us)');
 }
 
-if (!process.env.AWS_SECRET_ACCESS_KEY) {
-  throw new Error('AWS_SECRET_ACCESS_KEY is required');
-}
-
-if (!process.env.SES_SOURCE_EMAIL) {
-  throw new Error('SES_SOURCE_EMAIL is required');
-}
-
-// Configure AWS SDK
-AWS.config.update({
-  region: process.env.AWS_REGION,
-  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
-});
-
-// Create SES client
-const ses = new AWS.SES({ apiVersion: '2010-12-01' });
+// Create Resend client
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 /**
- * Send email via AWS SES
+ * Send email via Resend
  * @param {Object} options - Email options
  * @param {string} options.to - Recipient email
  * @param {string} options.subject - Email subject
  * @param {string} options.htmlBody - HTML email body
  * @param {string} options.textBody - Plain text email body
- * @returns {Promise<Object>} SES response
+ * @returns {Promise<Object>} Resend response
  */
 async function sendEmail({ to, subject, htmlBody, textBody }) {
-  const params = {
-    Source: process.env.SES_SOURCE_EMAIL,
-    Destination: {
-      ToAddresses: [to]
-    },
-    Message: {
-      Subject: {
-        Data: subject,
-        Charset: 'UTF-8'
-      },
-      Body: {
-        Html: {
-          Data: htmlBody,
-          Charset: 'UTF-8'
-        },
-        Text: {
-          Data: textBody,
-          Charset: 'UTF-8'
-        }
-      }
-    },
-    // Optional: Add list-unsubscribe header
-    // Tags: [
-    //   {
-    //     Name: 'email-type',
-    //     Value: 'confirmation'
-    //   }
-    // ]
-  };
-
   try {
-    const result = await ses.sendEmail(params).promise();
-    console.log('✅ Email sent successfully:', result.MessageId);
+    const result = await resend.emails.send({
+      from: process.env.FROM_EMAIL,
+      to: [to],
+      subject: subject,
+      html: htmlBody,
+      text: textBody
+    });
+    
+    console.log('✅ Email sent successfully:', result.id);
     return result;
   } catch (error) {
     console.error('❌ Error sending email:', error);
@@ -78,6 +40,6 @@ async function sendEmail({ to, subject, htmlBody, textBody }) {
 }
 
 module.exports = {
-  ses,
+  resend,
   sendEmail
 };
