@@ -60,6 +60,21 @@ router.post('/', async (req, res) => {
       return res.status(500).json({ error: 'Failed to create account' });
     }
 
+    // Create waitlist entry (required for admin approval workflow)
+    const { error: waitlistError } = await supabase
+      .from('waitlist_users')
+      .insert({
+        auth_user_id: newUser.user.id,
+        email: email,
+        full_name: metadata.full_name || email.split('@')[0],
+        status: 'pending' // User needs admin approval
+      });
+
+    if (waitlistError) {
+      console.error('Error creating waitlist entry:', waitlistError);
+      // Continue anyway - user can still confirm email
+    }
+
     // Generate confirmation token
     const token = generateToken();
     const expiresAt = getTokenExpiration();

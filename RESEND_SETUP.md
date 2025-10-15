@@ -19,12 +19,14 @@ FROM_EMAIL=onboarding@resend.dev
 
 **Note**: Use `onboarding@resend.dev` for free tier testing. Once you verify your domain in Resend, change to `support@speed-x.us`
 
-### Keep these unchanged:
+### Keep/Update these:
 ```env
 SUPABASE_URL=your_supabase_url
 SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
 API_BASE_URL=https://speedx-email-auth-production.up.railway.app
 ALLOWED_ORIGINS=https://speedx-f1-dashboard.vercel.app,http://localhost:3000
+FRONTEND_CONFIRM_REDIRECT=https://speedx-f1-dashboard.vercel.app/pending
+IOS_CONFIRM_REDIRECT=speedx://confirm
 NODE_ENV=production
 PORT=3000
 TOKEN_EXPIRATION_HOURS=48
